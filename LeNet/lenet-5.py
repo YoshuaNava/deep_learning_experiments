@@ -75,6 +75,7 @@ def main():
     num_classes = 10
     learning_rate = 0.001
     num_epochs = 10
+    batch_size = 64
 
     model = LeNet5(num_classes).to(device)
 
@@ -85,7 +86,7 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Fetch data.
-    train_loader, test_loader = fetch_mnist_data(batch_size=64)
+    train_loader, test_loader = fetch_mnist_data(batch_size=batch_size)
     total_step = len(train_loader)
 
     # Train!
@@ -98,16 +99,18 @@ def main():
             # Forward pass
             outputs = model(images)
             loss = cost(outputs, labels)
+
             # Backward and optimize
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if (i + 1) % 400 == 0:
-                print(
-                    "Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}".format(
-                        epoch + 1, num_epochs, i + 1, total_step, loss.item()
-                    )
-                )
+
+        # Print loss after every epoch
+        print(
+            "Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}".format(
+                epoch + 1, num_epochs, i + 1, total_step, loss.item()
+            )
+        )
 
     # Evaluate!
     model.eval()  # Set the model to evaluation mode
